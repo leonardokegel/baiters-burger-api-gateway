@@ -6,10 +6,6 @@
 .terraform
 terraform.rc
 
-# Variable definition files
-*.tfvars
-*.tfvars.json
-
 # Crash log files
 crash.log
 

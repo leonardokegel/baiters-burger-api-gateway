@@ -27,14 +27,12 @@ paths:
         "201":
           description: "Cliente criado com sucesso"
       x-amazon-apigateway-integration:
-        type: "mock"
-        requestTemplates:
-          application/json: '{"statusCode": 201}'
-        responses:
-          default:
-            statusCode: "201"
-            responseTemplates:
-              application/json: '{"message": "Mock: Recurso criado com sucesso."}'
+        type: "http_proxy"
+        httpMethod: "POST"
+        uri: "http://${nlb_dns_name}/api/v1/customers"
+        connectionType: "VPC_LINK"
+        connectionId: "${vpc_link_id}"
+        passthroughBehavior: "when_no_match"
 
   /api/v1/customers/{cpf}:
     get:
@@ -57,14 +55,14 @@ paths:
                 default:
                   $ref: "#/components/examples/CustomerResponse"
       x-amazon-apigateway-integration:
-        type: "mock"
-        requestTemplates:
-          application/json: '{"statusCode": 200}'
-        responses:
-          default:
-            statusCode: "200"
-            responseTemplates:
-              application/json: '{"message": "Mock: Operação realizada com sucesso."}'
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://${nlb_dns_name}/api/v1/customers/{cpf}"
+        connectionType: "VPC_LINK"
+        connectionId: "${vpc_link_id}"
+        passthroughBehavior: "when_no_match"
+        requestParameters:
+          integration.request.path.cpf: "method.request.path.cpf"
 
   /api/v1/products:
     post:
