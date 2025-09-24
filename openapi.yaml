@@ -81,14 +81,12 @@ paths:
         "201":
           description: "Produto criado com sucesso"
       x-amazon-apigateway-integration:
-        type: "mock"
-        requestTemplates:
-          application/json: '{"statusCode": 201}'
-        responses:
-          default:
-            statusCode: "201"
-            responseTemplates:
-              application/json: '{"message": "Mock: Recurso criado com sucesso."}'
+        type: "http_proxy"
+        httpMethod: "POST"
+        uri: "http://${nlb_dns_name}/api/v1/products"
+        connectionType: "VPC_LINK"
+        connectionId: "${vpc_link_id}"
+        passthroughBehavior: "when_no_match"
     get:
       tags: [Products]
       summary: "Lista produtos por categoria"
@@ -112,14 +110,12 @@ paths:
                 default:
                   $ref: "#/components/examples/ProductListResponse"
       x-amazon-apigateway-integration:
-        type: "mock"
-        requestTemplates:
-          application/json: '{"statusCode": 200}'
-        responses:
-          default:
-            statusCode: "200"
-            responseTemplates:
-              application/json: '{"message": "Mock: Operação realizada com sucesso."}'
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://${nlb_dns_name}/api/v1/products"
+        connectionType: "VPC_LINK"
+        connectionId: "${vpc_link_id}"
+        passthroughBehavior: "when_no_match"
 
   /api/v1/products/{product_id}:
     get:
@@ -142,14 +138,14 @@ paths:
                 default:
                   $ref: "#/components/examples/ProductResponse"
       x-amazon-apigateway-integration:
-        type: "mock"
-        requestTemplates:
-          application/json: '{"statusCode": 200}'
-        responses:
-          default:
-            statusCode: "200"
-            responseTemplates:
-              application/json: '{"message": "Mock: Operação realizada com sucesso."}'
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://${nlb_dns_name}/api/v1/products/{product_id}"
+        connectionType: "VPC_LINK"
+        connectionId: "${vpc_link_id}"
+        passthroughBehavior: "when_no_match"
+        requestParameters:
+          integration.request.path.product_id: "method.request.path.product_id"
     put:
       tags: [Products]
       summary: "Atualiza um produto existente"
@@ -172,14 +168,14 @@ paths:
         "200":
           description: "Produto atualizado com sucesso"
       x-amazon-apigateway-integration:
-        type: "mock"
-        requestTemplates:
-          application/json: '{"statusCode": 200}'
-        responses:
-          default:
-            statusCode: "200"
-            responseTemplates:
-              application/json: '{"message": "Mock: Operação realizada com sucesso."}'
+        type: "http_proxy"
+        httpMethod: "PUT"
+        uri: "http://${nlb_dns_name}/api/v1/products/{product_id}"
+        connectionType: "VPC_LINK"
+        connectionId: "${vpc_link_id}"
+        passthroughBehavior: "when_no_match"
+        requestParameters:
+          integration.request.path.product_id: "method.request.path.product_id"
 
   /api/v1/orders:
     post:
@@ -198,14 +194,12 @@ paths:
         "201":
           description: "Pedido criado com sucesso"
       x-amazon-apigateway-integration:
-        type: "mock"
-        requestTemplates:
-          application/json: '{"statusCode": 201}'
-        responses:
-          default:
-            statusCode: "201"
-            responseTemplates:
-              application/json: '{"message": "Mock: Recurso criado com sucesso."}'
+        type: "http_proxy"
+        httpMethod: "POST"
+        uri: "http://${nlb_dns_name}/api/v1/orders"
+        connectionType: "VPC_LINK"
+        connectionId: "${vpc_link_id}"
+        passthroughBehavior: "when_no_match"
     get:
       tags: [Orders]
       summary: "Lista os pedidos por status"
@@ -229,14 +223,12 @@ paths:
                 default:
                   $ref: "#/components/examples/OrderListResponse"
       x-amazon-apigateway-integration:
-        type: "mock"
-        requestTemplates:
-          application/json: '{"statusCode": 200}'
-        responses:
-          default:
-            statusCode: "200"
-            responseTemplates:
-              application/json: '{"message": "Mock: Operação realizada com sucesso."}'
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "http://${nlb_dns_name}/api/v1/orders"
+        connectionType: "VPC_LINK"
+        connectionId: "${vpc_link_id}"
+        passthroughBehavior: "when_no_match"
 
   /api/v1/orders/{order_id}:
     patch:
@@ -261,14 +253,14 @@ paths:
         "200":
           description: "Pedido atualizado com sucesso"
       x-amazon-apigateway-integration:
-        type: "mock"
-        requestTemplates:
-          application/json: '{"statusCode": 200}'
-        responses:
-          default:
-            statusCode: "200"
-            responseTemplates:
-              application/json: '{"message": "Mock: Operação realizada com sucesso."}'
+        type: "http_proxy"
+        httpMethod: "PATCH"
+        uri: "http://${nlb_dns_name}/api/v1/orders/{order_id}"
+        connectionType: "VPC_LINK"
+        connectionId: "${vpc_link_id}"
+        passthroughBehavior: "when_no_match"
+        requestParameters:
+          integration.request.path.order_id: "method.request.path.order_id"
 
 components:
   schemas:
