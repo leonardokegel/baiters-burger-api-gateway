@@ -4,6 +4,13 @@ info:
   description: "API para gerenciar clientes, produtos e pedidos."
   version: "1.0.0"
 
+x-amazon-apigateway-request-validator: "all"
+
+x-amazon-apigateway-request-validators:
+  all:
+    validateRequestBody: true
+    validateRequestParameters: true
+
 tags:
   - name: "Customers"
   - name: "Products"
@@ -14,6 +21,13 @@ paths:
     post:
       tags: [Customers]
       summary: "Cadastra um novo cliente"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          schema:
+            type: string
+          description: "Token de autenticação JWT"
       requestBody:
         required: true
         content:
@@ -44,6 +58,12 @@ paths:
           required: true
           schema:
             type: "string"
+        - name: "Authorization"
+          in: "header"
+          required: true
+          schema:
+            type: string
+          description: "Token de autenticação JWT"
       responses:
         "200":
           description: "Dados do cliente"
@@ -68,6 +88,13 @@ paths:
     post:
       tags: [Products]
       summary: "Cadastra um novo produto"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          schema:
+            type: string
+          description: "Token de autenticação JWT"
       requestBody:
         required: true
         content:
@@ -97,6 +124,12 @@ paths:
           schema:
             type: "string"
             enum: [BURGERS, SIDE_DISHES, DRINKS, DESSERTS]
+        - name: "Authorization"
+          in: "header"
+          required: true
+          schema:
+            type: string
+          description: "Token de autenticação JWT"
       responses:
         "200":
           description: "Lista de produtos"
@@ -127,6 +160,12 @@ paths:
           required: true
           schema:
             type: "string"
+        - name: "Authorization"
+          in: "header"
+          required: true
+          schema:
+            type: string
+          description: "Token de autenticação JWT"
       responses:
         "200":
           description: "Dados do produto"
@@ -155,6 +194,12 @@ paths:
           required: true
           schema:
             type: "string"
+        - name: "Authorization"
+          in: "header"
+          required: true
+          schema:
+            type: string
+          description: "Token de autenticação JWT"
       requestBody:
         required: true
         content:
@@ -181,6 +226,13 @@ paths:
     post:
       tags: [Orders]
       summary: "Cria um novo pedido"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          required: true
+          schema:
+            type: string
+          description: "Token de autenticação JWT"
       requestBody:
         required: true
         content:
@@ -210,6 +262,12 @@ paths:
           schema:
             type: "string"
             enum: [REQUESTED, RECEIVED, PREPARING, READY, DELIVERED]
+        - name: "Authorization"
+          in: "header"
+          required: true
+          schema:
+            type: string
+          description: "Token de autenticação JWT"
       responses:
         "200":
           description: "Lista de pedidos"
@@ -240,6 +298,12 @@ paths:
           required: true
           schema:
             type: "string"
+        - name: "Authorization"
+          in: "header"
+          required: true
+          schema:
+            type: string
+          description: "Token de autenticação JWT"
       requestBody:
         required: true
         content:
@@ -331,7 +395,6 @@ components:
             $ref: "#/components/schemas/OrderProduct"
         createdAt: { type: "string", format: "date-time" }
         name: { type: "string" }
-
   examples:
     NewCustomer:
       summary: Exemplo de body para criar um novo cliente
@@ -390,15 +453,11 @@ components:
           totalPrice: 0.02
           status: "READY"
           products:
-            - {
-                productName: "X-Burger",
-                category: "BURGERS",
-                description: "Product Description",
-              }
-            - {
-                productName: "X-Salad",
-                category: "BURGERS",
-                description: "Product Description",
-              }
+            - productName: "X-Burger"
+              category: "BURGERS"
+              description: "Product Description"
+            - productName: "X-Salad"
+              category: "BURGERS"
+              description: "Product Description"
           createdAt: "2025-07-29T20:52:38.067Z"
           name: "Daniel Ferreira"
