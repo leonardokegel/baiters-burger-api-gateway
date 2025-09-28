@@ -5,6 +5,7 @@ resource "aws_api_gateway_rest_api" "api" {
   body = templatefile("${path.module}/openapi.yaml", {
     vpc_link_id  = aws_api_gateway_vpc_link.eks_nlb_link.id
     nlb_dns_name = var.nlb_dns_name
+    lambda_authorizer_arn = aws_lambda_function.api_authorizer.arn 
   })
 
   endpoint_configuration {
@@ -24,9 +25,8 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   }
 }
 
-
 resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  stage_name    = "v1"
+  stage_name    = "prod"
 }

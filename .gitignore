@@ -17,3 +17,6 @@ override.tf.json
 
 # Provider-specific files (examples)
 # .terraform-lock.hcl # Uncomment if you want to ignore this
+
+# Ignorar dependências do Node.js
+node_modules/
