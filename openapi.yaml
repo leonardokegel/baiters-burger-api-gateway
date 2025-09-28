@@ -6,11 +6,6 @@ info:
 
 x-amazon-apigateway-request-validator: "all"
 
-x-amazon-apigateway-request-validators:
-  all:
-    validateRequestBody: true
-    validateRequestParameters: true
-
 tags:
   - name: "Customers"
   - name: "Products"
@@ -21,13 +16,8 @@ paths:
     post:
       tags: [Customers]
       summary: "Cadastra um novo cliente"
-      parameters:
-        - name: "Authorization"
-          in: "header"
-          required: true
-          schema:
-            type: string
-          description: "Token de autenticação JWT"
+      security:
+        - LambdaJWTAuthorizer: []
       requestBody:
         required: true
         content:
@@ -52,18 +42,14 @@ paths:
     get:
       tags: [Customers]
       summary: "Busca um cliente pelo CPF"
+      security:
+        - LambdaJWTAuthorizer: []
       parameters:
         - name: "cpf"
           in: "path"
           required: true
           schema:
             type: "string"
-        - name: "Authorization"
-          in: "header"
-          required: true
-          schema:
-            type: string
-          description: "Token de autenticação JWT"
       responses:
         "200":
           description: "Dados do cliente"
@@ -88,13 +74,8 @@ paths:
     post:
       tags: [Products]
       summary: "Cadastra um novo produto"
-      parameters:
-        - name: "Authorization"
-          in: "header"
-          required: true
-          schema:
-            type: string
-          description: "Token de autenticação JWT"
+      security:
+        - LambdaJWTAuthorizer: []
       requestBody:
         required: true
         content:
@@ -117,6 +98,8 @@ paths:
     get:
       tags: [Products]
       summary: "Lista produtos por categoria"
+      security:
+        - LambdaJWTAuthorizer: []
       parameters:
         - name: "category"
           in: "query"
@@ -124,12 +107,6 @@ paths:
           schema:
             type: "string"
             enum: [BURGERS, SIDE_DISHES, DRINKS, DESSERTS]
-        - name: "Authorization"
-          in: "header"
-          required: true
-          schema:
-            type: string
-          description: "Token de autenticação JWT"
       responses:
         "200":
           description: "Lista de produtos"
@@ -154,18 +131,14 @@ paths:
     get:
       tags: [Products]
       summary: "Busca um produto pelo ID"
+      security:
+        - LambdaJWTAuthorizer: []
       parameters:
         - name: "product_id"
           in: "path"
           required: true
           schema:
             type: "string"
-        - name: "Authorization"
-          in: "header"
-          required: true
-          schema:
-            type: string
-          description: "Token de autenticação JWT"
       responses:
         "200":
           description: "Dados do produto"
@@ -188,18 +161,14 @@ paths:
     put:
       tags: [Products]
       summary: "Atualiza um produto existente"
+      security:
+        - LambdaJWTAuthorizer: []
       parameters:
         - name: "product_id"
           in: "path"
           required: true
           schema:
             type: "string"
-        - name: "Authorization"
-          in: "header"
-          required: true
-          schema:
-            type: string
-          description: "Token de autenticação JWT"
       requestBody:
         required: true
         content:
@@ -226,13 +195,8 @@ paths:
     post:
       tags: [Orders]
       summary: "Cria um novo pedido"
-      parameters:
-        - name: "Authorization"
-          in: "header"
-          required: true
-          schema:
-            type: string
-          description: "Token de autenticação JWT"
+      security:
+        - LambdaJWTAuthorizer: []
       requestBody:
         required: true
         content:
@@ -255,6 +219,8 @@ paths:
     get:
       tags: [Orders]
       summary: "Lista os pedidos por status"
+      security:
+        - LambdaJWTAuthorizer: []
       parameters:
         - name: "status"
           in: "query"
@@ -262,12 +228,6 @@ paths:
           schema:
             type: "string"
             enum: [REQUESTED, RECEIVED, PREPARING, READY, DELIVERED]
-        - name: "Authorization"
-          in: "header"
-          required: true
-          schema:
-            type: string
-          description: "Token de autenticação JWT"
       responses:
         "200":
           description: "Lista de pedidos"
@@ -292,18 +252,14 @@ paths:
     patch:
       tags: [Orders]
       summary: "Atualiza o status de um pedido"
+      security:
+        - LambdaJWTAuthorizer: []
       parameters:
         - name: "order_id"
           in: "path"
           required: true
           schema:
             type: "string"
-        - name: "Authorization"
-          in: "header"
-          required: true
-          schema:
-            type: string
-          description: "Token de autenticação JWT"
       requestBody:
         required: true
         content:
@@ -461,3 +417,18 @@ components:
               description: "Product Description"
           createdAt: "2025-07-29T20:52:38.067Z"
           name: "Daniel Ferreira"
+
+  x-amazon-apigateway-request-validators:
+    all:
+      validateRequestBody: true
+      validateRequestParameters: true
+
+  securitySchemes:
+    LambdaJWTAuthorizer:
+      type: "apiKey"
+      name: "Authorization"
+      in: "header"
+      x-amazon-apigateway-authtype: "custom"
+      x-amazon-apigateway-authorizer:
+        type: "token"
+        authorizerUri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${lambda_authorizer_arn}/invocations"
