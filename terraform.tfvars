@@ -1,4 +1,4 @@
 project_name = "baiters-burger"
-vpc_id       = "vpc-0b826f762ac9fdf64"
-nlb_arn      = "arn:aws:elasticloadbalancing:us-east-1:992382361660:loadbalancer/net/aaf5681c070d44f1f81bd75f54bc8514/3b1f9619dcca73dc"
-nlb_dns_name = "aaf5681c070d44f1f81bd75f54bc8514-3b1f9619dcca73dc.elb.us-east-1.amazonaws.com"
+vpc_id       = "vpc-091c358dde7485884"
+nlb_arn      = "arn:aws:elasticloadbalancing:us-east-1:381492003870:loadbalancer/net/ae4bc6b4343044f1d8ea620f252262c3/2e21640090cc3d68"
+nlb_dns_name = "ae4bc6b4343044f1d8ea620f252262c3-2e21640090cc3d68.elb.us-east-1.amazonaws.com"
