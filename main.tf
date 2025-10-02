@@ -3,9 +3,9 @@ resource "aws_api_gateway_rest_api" "api" {
   description = "API para o sistema Baiters Burger"
 
   body = templatefile("${path.module}/openapi.yaml", {
-    vpc_link_id  = aws_api_gateway_vpc_link.eks_nlb_link.id
-    nlb_dns_name = var.nlb_dns_name
-    lambda_authorizer_arn = aws_lambda_function.api_authorizer.arn 
+    vpc_link_id           = aws_api_gateway_vpc_link.eks_nlb_link.id
+    nlb_dns_name          = var.nlb_dns_name
+    lambda_authorizer_arn = aws_lambda_function.api_authorizer.arn
   })
 
   endpoint_configuration {
