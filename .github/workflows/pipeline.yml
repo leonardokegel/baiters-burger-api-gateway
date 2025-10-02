@@ -1,4 +1,4 @@
-name: 'CI/CD for API Gateway and Lambda Authorizer'
+name: "CI/CD for API Gateway and Lambda Authorizer"
 
 on:
   push:
@@ -7,12 +7,12 @@ on:
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: "Terraform"
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v5.0.0
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -25,23 +25,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install Lambda Authorizer Dependencies
         run: npm install
         working-directory: ./lambda-authorizer
 
-      - name: Setup Terraform
+      - name: Add Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
+      - name: Set up infrastructure
         run: terraform init
 
-      - name: Terraform Validate
+      - name: Validate Terraform configuration
         run: terraform validate
 
-      - name: Terraform Plan
-        run: terraform plan -no-color
+      - name: Plan infrastructure changes
+        run: terraform plan
 
-      - name: Terraform Apply
+      - name: Apply infrastructure changes
         run: terraform apply -auto-approve
