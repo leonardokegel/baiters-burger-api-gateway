@@ -359,35 +359,33 @@ paths:
                 connectionId: "${vpc_link_id}"
                 passthroughBehavior: "when_no_match"
 
-    # /api/v1/login:
-    #     post:
-    #         tags: ["Auth"]
-    #         summary: "Endpoint para login de funcionários"
-    #         requestBody:
-    #             required: true
-    #             content:
-    #                 application/json:
-    #                     schema:
-    #                         $ref: "#/components/schemas/LoginInput"
-    #                     examples:
-    #                         default:
-    #                             $ref: "#/components/examples/LoginInput"
-    #         responses:
-    #             "200":
-    #                 description: "Login realizado com sucesso"
-    #                 content:
-    #                     application/json:
-    #                         schema:
-    #                             type: "object"
-    #                             properties:
-    #                                 token: { type: "string" }
-    #                                 expiresIn: { type: "number" }
-    #         x-amazon-apigateway-integration:
-    #             uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${auth_lambda_arn}/invocations"
-    #             passthroughBehavior: "when_no_match"
-    #             httpMethod: "POST"
-    #             type: "aws_proxy"
-    #             credentials: "${lambda_execution_role_arn}"
+    /api/v1/login:
+        post:
+            tags: ["Auth"]
+            summary: "Endpoint para login de funcionários"
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/LoginInput"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/LoginInput"
+            responses:
+                "200":
+                    description: "Login realizado com sucesso"
+                    content:
+                        application/json:
+                            schema:
+                                type: "object"
+                                properties:
+                                    token: { type: "string" }
+                                    expiresIn: { type: "number" }
+            x-amazon-apigateway-integration:
+                uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${lambda_authenticator_arn}/invocations"
+                httpMethod: "POST"
+                type: "aws_proxy"
 
 components:
     schemas:
