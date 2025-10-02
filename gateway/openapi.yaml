@@ -1,4 +1,4 @@
-openapi: "3.1.1"
+openapi: "3.0.4"
 info:
     title: "API Baiters Burger"
     description: "API para gerenciar clientes, produtos e pedidos."
@@ -390,65 +390,65 @@ paths:
 components:
     schemas:
         Customer:
-            $ref: "./schemas/customer.yaml"
+            $ref: "./schemas/Customer.yaml"
 
         CustomerInput:
-            $ref: "./schemas/customer-input.yaml"
+            $ref: "./schemas/CustomerInput.yaml"
 
         Product:
-            $ref: "./schemas/product.yaml"
+            $ref: "./schemas/Product.yaml"
 
         ProductInput:
-            $ref: "./schemas/product-input.yaml"
+            $ref: "./schemas/ProductInput.yaml"
 
         WebhookInput:
-            $ref: "./schemas/webhook-input.yaml"
+            $ref: "./schemas/WebhookInput.yaml"
 
         OrderInput:
-            $ref: "./schemas/order-input.yaml"
+            $ref: "./schemas/OrderInput.yaml"
 
         UpdateOrderStatusInput:
-            $ref: "./schemas/update-orderstatus-input.yaml"
+            $ref: "./schemas/UpdateOrderStatusInput.yaml"
 
         OrderProduct:
-            $ref: "./schemas/order-product.yaml"
+            $ref: "./schemas/OrderProduct.yaml"
 
         Order:
-            $ref: "./schemas/order.yaml"
+            $ref: "./schemas/Order.yaml"
 
         LoginInput:
-            $ref: "./schemas/login-input.yaml"
+            $ref: "./schemas/LoginInput.yaml"
 
     examples:
         NewCustomer:
-            $ref: "./examples/new-customer.yaml"
+            $ref: "./examples/NewCustomer.yaml"
 
         CustomerResponse:
-            $ref: "./examples/customer-response.yaml"
+            $ref: "./examples/CustomerResponse.yaml"
 
         NewProduct:
-            $ref: "./examples/new-product.yaml"
+            $ref: "./examples/NewProduct.yaml"
 
         ProductResponse:
-            $ref: "./examples/product-response.yaml"
+            $ref: "./examples/ProductResponse.yaml"
 
         ProductListResponse:
-            $ref: "./examples/product-list-response.yaml"
+            $ref: "./examples/ProductListResponse.yaml"
 
         WebhookInput:
-            $ref: "./examples/webhook-input.yaml"
+            $ref: "./examples/WebhookInput.yaml"
 
         NewOrder:
-            $ref: "./examples/new-order.yaml"
+            $ref: "./examples/NewOrder.yaml"
 
         UpdateStatus:
-            $ref: "./examples/update-status.yaml"
+            $ref: "./examples/UpdateStatus.yaml"
 
         OrderListResponse:
-            $ref: "./examples/order-list-response.yaml"
+            $ref: "./examples/OrderListResponse.yaml"
 
         LoginInput:
-            $ref: "./examples/login-input.yaml"
+            $ref: "./examples/LoginInput.yaml"
 
     x-amazon-apigateway-request-validators:
         all:
