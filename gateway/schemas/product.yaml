@@ -1,0 +1,9 @@
+type: "object"
+properties:
+    productName: { type: "string" }
+    category: { type: "string" }
+    price: { type: "number", format: "float" }
+    description: { type: "string" }
+    imagesUrls:
+        type: "array"
+        items: { type: "string", format: "uri" }

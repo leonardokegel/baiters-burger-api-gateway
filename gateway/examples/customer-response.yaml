@@ -1,0 +1,5 @@
+summary: Exemplo de retorno para um cliente
+value:
+    cpf: "48481743844"
+    name: "mirna"
+    email: "mirna@gmail.com"
