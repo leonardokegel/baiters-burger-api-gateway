@@ -1,0 +1,4 @@
+summary: Exemplo de body para login
+value:
+    username: "employee@example.com"
+    password: "password123"

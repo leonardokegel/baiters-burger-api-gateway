@@ -1,0 +1,4 @@
+summary: Exemplo de body para o webhook
+value:
+    externalReference: "68895bcbe4fab42ff618e22f"
+    status: "APPROVE"

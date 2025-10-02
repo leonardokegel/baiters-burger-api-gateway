@@ -1,0 +1,5 @@
+summary: Exemplo de body para criar um novo cliente
+value:
+    name: "mirna"
+    cpf: "48481743844"
+    email: "mirna@gmail.com"

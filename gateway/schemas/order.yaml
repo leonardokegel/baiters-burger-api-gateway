@@ -1,0 +1,15 @@
+type: "object"
+properties:
+    products:
+        type: "array"
+        items:
+            $ref: "#/components/schemas/Product"
+    totalPrice: { type: "number", format: "float" }
+    createdAt: { type: "string", format: "date-time" }
+    status: { type: "string" }
+    customer:
+        type: "object"
+        properties:
+            name: { type: "string" }
+            cpf: { type: "string" }
+            email: { type: "string", format: "email" }
