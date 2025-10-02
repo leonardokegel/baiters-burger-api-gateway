@@ -2,7 +2,7 @@ resource "aws_api_gateway_rest_api" "api" {
   name        = "${var.project_name}-api"
   description = "API para o sistema Baiters Burger"
 
-  body = templatefile("../gateway/openapi.yaml", {
+  body = templatefile("../gateway/openapi-bundled.yaml", {
     vpc_link_id           = aws_api_gateway_vpc_link.eks_nlb_link.id
     nlb_dns_name          = var.nlb_dns_name
     lambda_authorizer_arn = data.aws_lambda_function.existing_lambda_authorizer.arn
