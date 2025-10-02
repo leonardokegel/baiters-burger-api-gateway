@@ -1,0 +1,678 @@
+openapi: 3.1.1
+info:
+  title: API Baiters Burger
+  description: API para gerenciar clientes, produtos e pedidos.
+  version: 1.0.0
+tags:
+  - name: Customers
+  - name: Products
+  - name: Orders
+  - name: Webhook
+  - name: Auth
+paths:
+  /api/v1/customers:
+    post:
+      tags:
+        - Customers
+      summary: Cadastra um novo cliente
+      security:
+        - LambdaJWTAuthorizer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer-input'
+            examples:
+              default:
+                $ref: '#/components/examples/new-customer'
+      responses:
+        '201':
+          description: Cliente criado com sucesso
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: POST
+        uri: http://${nlb_dns_name}/api/v1/customers
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+  /api/v1/customers/{cpf}:
+    get:
+      tags:
+        - Customers
+      summary: Busca um cliente pelo CPF
+      security:
+        - LambdaJWTAuthorizer: []
+      parameters:
+        - name: cpf
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados do cliente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+              examples:
+                default:
+                  $ref: '#/components/examples/customer-response'
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: GET
+        uri: http://${nlb_dns_name}/api/v1/customers/{cpf}
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+        requestParameters:
+          integration.request.path.cpf: method.request.path.cpf
+  /api/v1/products:
+    post:
+      tags:
+        - Products
+      summary: Cadastra um novo produto
+      security:
+        - LambdaJWTAuthorizer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product-input'
+            examples:
+              default:
+                $ref: '#/components/examples/new-product'
+      responses:
+        '201':
+          description: Produto criado com sucesso
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: POST
+        uri: http://${nlb_dns_name}/api/v1/products
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+    get:
+      tags:
+        - Products
+      summary: Lista produtos por categoria
+      security:
+        - LambdaJWTAuthorizer: []
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - BURGERS
+              - SIDE_DISHES
+              - DRINKS
+              - DESSERTS
+      responses:
+        '200':
+          description: Lista de produtos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product'
+              examples:
+                default:
+                  $ref: '#/components/examples/product-list-response'
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: GET
+        uri: http://${nlb_dns_name}/api/v1/products
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+  /api/v1/products/{product_id}:
+    get:
+      tags:
+        - Products
+      summary: Busca um produto pelo ID
+      security:
+        - LambdaJWTAuthorizer: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados do produto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+              examples:
+                default:
+                  $ref: '#/components/examples/product-response'
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: GET
+        uri: http://${nlb_dns_name}/api/v1/products/{product_id}
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+        requestParameters:
+          integration.request.path.product_id: method.request.path.product_id
+    put:
+      tags:
+        - Products
+      summary: Atualiza um produto existente
+      security:
+        - LambdaJWTAuthorizer: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product-input'
+            examples:
+              default:
+                $ref: '#/components/examples/new-product'
+      responses:
+        '200':
+          description: Produto atualizado com sucesso
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: PUT
+        uri: http://${nlb_dns_name}/api/v1/products/{product_id}
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+        requestParameters:
+          integration.request.path.product_id: method.request.path.product_id
+    delete:
+      tags:
+        - Products
+      summary: Deleta um produto existente
+      security:
+        - LambdaJWTAuthorizer: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Produto deletado com sucesso
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: DELETE
+        uri: http://${nlb_dns_name}/api/v1/products/{product_id}
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+        requestParameters:
+          integration.request.path.product_id: method.request.path.product_id
+  /api/v1/orders:
+    post:
+      tags:
+        - Orders
+      summary: Cria um novo pedido
+      security:
+        - LambdaJWTAuthorizer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/order-input'
+            examples:
+              default:
+                $ref: '#/components/examples/new-order'
+      responses:
+        '201':
+          description: Pedido criado com sucesso
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: POST
+        uri: http://${nlb_dns_name}/api/v1/orders
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+    get:
+      tags:
+        - Orders
+      summary: Lista todos os pedidos
+      security:
+        - LambdaJWTAuthorizer: []
+      responses:
+        '200':
+          description: Lista de pedidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/order'
+              examples:
+                default:
+                  $ref: '#/components/examples/order-list-response'
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: GET
+        uri: http://${nlb_dns_name}/api/v1/orders
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+  /api/v1/orderstatus/{status}:
+    get:
+      tags:
+        - Orders
+      summary: Lista os pedidos por status (endpoint alternativo)
+      security:
+        - LambdaJWTAuthorizer: []
+      parameters:
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - REQUESTED
+              - RECEIVED
+              - PREPARING
+              - READY
+              - DELIVERED
+      responses:
+        '200':
+          description: Lista de pedidos que estão no status especificado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/order'
+              examples:
+                default:
+                  $ref: '#/components/examples/order-list-response'
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: GET
+        uri: http://${nlb_dns_name}/api/v1/orderstatus/{status}
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+        requestParameters:
+          integration.request.path.status: method.request.path.status
+  /api/v1/orders/{order_id}:
+    patch:
+      tags:
+        - Orders
+      summary: Atualiza o status de um pedido
+      security:
+        - LambdaJWTAuthorizer: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update-orderstatus-input'
+            examples:
+              default:
+                $ref: '#/components/examples/update-status'
+      responses:
+        '200':
+          description: Pedido atualizado com sucesso
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: PATCH
+        uri: http://${nlb_dns_name}/api/v1/orders/{order_id}
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+        requestParameters:
+          integration.request.path.order_id: method.request.path.order_id
+  /api/v1/webhook:
+    post:
+      tags:
+        - Orders
+        - Webhook
+      summary: Endpoint para webhook do MercadoPago
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/webhook-input'
+            examples:
+              default:
+                $ref: '#/components/examples/webhook-input'
+      responses:
+        '200':
+          description: Webhook chamado com sucesso
+      x-amazon-apigateway-integration:
+        type: http_proxy
+        httpMethod: POST
+        uri: http://${nlb_dns_name}/webhook
+        connectionType: VPC_LINK
+        connectionId: ${vpc_link_id}
+        passthroughBehavior: when_no_match
+  /api/v1/login:
+    post:
+      tags:
+        - Auth
+      summary: Endpoint para login de funcionários
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/login-input'
+            examples:
+              default:
+                $ref: '#/components/examples/login-input'
+      responses:
+        '200':
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  expiresIn:
+                    type: number
+      x-amazon-apigateway-integration:
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${lambda_authenticator_arn}/invocations
+        httpMethod: POST
+        type: aws_proxy
+components:
+  schemas:
+    Customer:
+      $ref: '#/components/schemas/customer'
+    CustomerInput:
+      $ref: '#/components/schemas/customer-input'
+    Product:
+      $ref: '#/components/schemas/product'
+    ProductInput:
+      $ref: '#/components/schemas/product-input'
+    WebhookInput:
+      $ref: '#/components/schemas/webhook-input'
+    OrderInput:
+      $ref: '#/components/schemas/order-input'
+    UpdateOrderStatusInput:
+      $ref: '#/components/schemas/update-orderstatus-input'
+    OrderProduct:
+      $ref: '#/components/schemas/order-product'
+    Order:
+      $ref: '#/components/schemas/order'
+    LoginInput:
+      $ref: '#/components/schemas/login-input'
+    customer-input:
+      type: object
+      required:
+        - name
+        - cpf
+        - email
+      properties:
+        name:
+          type: string
+        cpf:
+          type: string
+        email:
+          type: string
+          format: email
+    customer:
+      type: object
+      properties:
+        cpf:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+    product:
+      type: object
+      properties:
+        productName:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+          format: float
+        description:
+          type: string
+        imagesUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+    product-input:
+      type: object
+      required:
+        - productName
+        - category
+        - price
+        - description
+      properties:
+        productName:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+          format: float
+        description:
+          type: string
+        imagesUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+    order:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/product'
+        totalPrice:
+          type: number
+          format: float
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        customer:
+          type: object
+          properties:
+            name:
+              type: string
+            cpf:
+              type: string
+            email:
+              type: string
+              format: email
+    order-input:
+      type: object
+      required:
+        - productsIds
+      properties:
+        productsIds:
+          type: array
+          items:
+            type: string
+        customerCpf:
+          type: string
+    update-orderstatus-input:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - REQUESTED
+            - RECEIVED
+            - PREPARING
+            - READY
+            - DELIVERED
+    webhook-input:
+      type: object
+      properties:
+        externalReference:
+          type: string
+        status:
+          type: string
+    login-input:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+    order-product:
+      type: object
+      properties:
+        productName:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+  examples:
+    NewCustomer:
+      $ref: '#/components/examples/new-customer'
+    CustomerResponse:
+      $ref: '#/components/examples/customer-response'
+    NewProduct:
+      $ref: '#/components/examples/new-product'
+    ProductResponse:
+      $ref: '#/components/examples/product-response'
+    ProductListResponse:
+      $ref: '#/components/examples/product-list-response'
+    WebhookInput:
+      $ref: '#/components/examples/webhook-input'
+    NewOrder:
+      $ref: '#/components/examples/new-order'
+    UpdateStatus:
+      $ref: '#/components/examples/update-status'
+    OrderListResponse:
+      $ref: '#/components/examples/order-list-response'
+    LoginInput:
+      $ref: '#/components/examples/login-input'
+    new-customer:
+      summary: Exemplo de body para criar um novo cliente
+      value:
+        name: mirna
+        cpf: '48481743844'
+        email: mirna@gmail.com
+    customer-response:
+      summary: Exemplo de retorno para um cliente
+      value:
+        cpf: '48481743844'
+        name: mirna
+        email: mirna@gmail.com
+    product-list-response:
+      summary: Exemplo de retorno para uma lista de produtos
+      value:
+        - productName: X-Burger
+          category: BURGERS
+          price: 0.01
+          description: Product Description
+          imagesUrls:
+            - http://example.com/image1.jpg
+        - productName: X-Everything
+          category: BURGERS
+          price: 0.01
+          description: p
+          imagesUrls:
+            - http://example.com/image1.jpg
+    new-product:
+      summary: Exemplo de body para criar um novo produto
+      value:
+        productName: Produto 23
+        category: BURGERS
+        price: 100
+        description: burguer 2 exemplo
+        imagesUrls:
+          - http://example.com/image1.jpg
+    product-response:
+      summary: Exemplo de retorno para um único produto
+      value:
+        productName: X-Burger
+        category: BURGERS
+        price: 0.01
+        description: Product Description
+        imagesUrls:
+          - http://example.com/image1.jpg
+    order-list-response:
+      summary: Exemplo de retorno para uma lista de pedidos
+      value:
+        - id: 68895ec6e6b7565abfa6c833
+          totalPrice: 0.02
+          status: READY
+          products:
+            - productName: X-Burger
+              category: BURGERS
+              description: Product Description
+            - productName: X-Salad
+              category: BURGERS
+              description: Product Description
+          createdAt: '2025-07-29T20:52:38.067Z'
+          name: Daniel Ferreira
+    new-order:
+      summary: Exemplo de body para criar um novo pedido
+      value:
+        productsIds:
+          - 683a3be2eea4980451cfad26
+          - 683a3c04eea4980451cfad27
+        customerCpf: '41003884032'
+    update-status:
+      summary: Exemplo de body para atualizar o status de um pedido
+      value:
+        status: PREPARING
+    webhook-input:
+      summary: Exemplo de body para o webhook
+      value:
+        externalReference: 68895bcbe4fab42ff618e22f
+        status: APPROVE
+    login-input:
+      summary: Exemplo de body para login
+      value:
+        username: employee@example.com
+        password: password123
+  x-amazon-apigateway-request-validators:
+    all:
+      validateRequestBody: true
+      validateRequestParameters: true
+  securitySchemes:
+    LambdaJWTAuthorizer:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-amazon-apigateway-authtype: custom
+      x-amazon-apigateway-authorizer:
+        type: token
+        authorizerUri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${lambda_authorizer_arn}/invocations
+x-amazon-apigateway-request-validator: all
