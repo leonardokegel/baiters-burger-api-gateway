@@ -39,3 +39,11 @@ resource "aws_lambda_permission" "api_gateway_authorizer_invoke" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/authorizers/*"
 }
+
+resource "aws_lambda_permission" "api_gateway_integration_invoke" {
+  statement_id  = "AllowAPIGatewayToInvokeLoginLambda"
+  action        = "lambda:InvokeFunction"
+  function_name = data.aws_lambda_function.existing_lambda_authenticator.function_name 
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*" 
+}
