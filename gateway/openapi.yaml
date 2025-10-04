@@ -335,7 +335,7 @@ paths:
                 requestParameters:
                     integration.request.path.order_id: "method.request.path.order_id"
 
-    /api/v1/webhook:
+    /api/v1/orders/webhook:
         post:
             tags: [Orders, Webhook]
             summary: "Endpoint para webhook do MercadoPago"
@@ -354,7 +354,7 @@ paths:
             x-amazon-apigateway-integration:
                 type: "http_proxy"
                 httpMethod: "POST"
-                uri: "http://${nlb_dns_name}/webhook"
+                uri: "http://${nlb_dns_name}/api/v1/orders/webhook"
                 connectionType: "VPC_LINK"
                 connectionId: "${vpc_link_id}"
                 passthroughBehavior: "when_no_match"
