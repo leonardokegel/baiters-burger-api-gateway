@@ -19,7 +19,8 @@ paths:
             tags: [Customers]
             summary: "Cadastra um novo cliente"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
             requestBody:
                 required: true
                 content:
@@ -45,7 +46,8 @@ paths:
             tags: [Customers]
             summary: "Busca um cliente pelo CPF"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
             parameters:
                 - name: "cpf"
                   in: "path"
@@ -77,7 +79,7 @@ paths:
             tags: [Products]
             summary: "Cadastra um novo produto"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
             requestBody:
                 required: true
                 content:
@@ -101,7 +103,8 @@ paths:
             tags: [Products]
             summary: "Lista produtos por categoria"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
             parameters:
                 - name: "category"
                   in: "query"
@@ -134,7 +137,8 @@ paths:
             tags: [Products]
             summary: "Busca um produto pelo ID"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
             parameters:
                 - name: "product_id"
                   in: "path"
@@ -164,7 +168,7 @@ paths:
             tags: [Products]
             summary: "Atualiza um produto existente"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
             parameters:
                 - name: "product_id"
                   in: "path"
@@ -196,7 +200,7 @@ paths:
             tags: [Products]
             summary: "Deleta um produto existente"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
             parameters:
                 - name: "product_id"
                   in: "path"
@@ -221,7 +225,8 @@ paths:
             tags: [Orders]
             summary: "Cria um novo pedido"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
             requestBody:
                 required: true
                 content:
@@ -245,7 +250,7 @@ paths:
             tags: [Orders]
             summary: "Lista todos os pedidos"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
             responses:
                 "200":
                     description: "Lista de pedidos"
@@ -271,7 +276,7 @@ paths:
             tags: [Orders]
             summary: "Lista os pedidos por status (endpoint alternativo)"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
             parameters:
                 - name: "status"
                   in: "path"
@@ -306,7 +311,7 @@ paths:
             tags: [Orders]
             summary: "Atualiza o status de um pedido"
             security:
-                - LambdaJWTAuthorizer: []
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
             parameters:
                 - name: "order_id"
                   in: "path"
