@@ -1,0 +1,52 @@
+name: "CI/CD for API Gateway and Lambda Authorizer"
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./infra
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5.0.0
+        with:
+          node-version: "18"
+
+      - name: Bundle OpenAPI Specification
+        working-directory: ./gateway
+        run: |
+          npm install -g @redocly/cli
+          redocly bundle openapi.yaml --output openapi-bundled.yaml
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Add Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Set up infrastructure
+        run: terraform init
+
+      - name: Validate Terraform configuration
+        run: terraform validate
+
+      - name: Plan infrastructure changes
+        run: terraform plan
+
+      - name: Apply infrastructure changes
+        run: terraform apply -auto-approve

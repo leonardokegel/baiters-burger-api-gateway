@@ -1,0 +1,4 @@
+summary: Exemplo de body para criar um novo pedido
+value:
+    productsIds: ["683a3be2eea4980451cfad26", "683a3c04eea4980451cfad27"]
+    customerCpf: "41003884032"

@@ -1,0 +1,5 @@
+type: "object"
+properties:
+    productName: { type: "string" }
+    category: { type: "string" }
+    description: { type: "string" }

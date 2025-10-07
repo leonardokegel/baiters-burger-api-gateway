@@ -1,0 +1,6 @@
+type: "object"
+required: [name, cpf, email]
+properties:
+    name: { type: "string" }
+    cpf: { type: "string" }
+    email: { type: "string", format: "email" }

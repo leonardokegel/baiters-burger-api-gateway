@@ -1,0 +1,5 @@
+type: "object"
+properties:
+    cpf: { type: "string" }
+    name: { type: "string" }
+    email: { type: "string", format: "email" }

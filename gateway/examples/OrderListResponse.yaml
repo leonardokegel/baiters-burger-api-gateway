@@ -1,0 +1,14 @@
+summary: Exemplo de retorno para uma lista de pedidos
+value:
+    - id: "68895ec6e6b7565abfa6c833"
+      totalPrice: 0.02
+      status: "READY"
+      products:
+          - productName: "X-Burger"
+            category: "BURGERS"
+            description: "Product Description"
+          - productName: "X-Salad"
+            category: "BURGERS"
+            description: "Product Description"
+      createdAt: "2025-07-29T20:52:38.067Z"
+      name: "Daniel Ferreira"

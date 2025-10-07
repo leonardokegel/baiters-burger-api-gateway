@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "my-baiters-state-bucket-eks"
-    key    = "terraform/state.tfstate"
+    bucket = "baiters-burger-infra"
+    key    = "terraform/apigtw/state.tfstate"
     region = "us-east-1"
   }
   required_providers {

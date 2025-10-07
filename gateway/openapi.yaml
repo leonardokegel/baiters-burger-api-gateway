@@ -1,0 +1,471 @@
+openapi: "3.0.4"
+info:
+    title: "API Baiters Burger"
+    description: "API para gerenciar clientes, produtos e pedidos."
+    version: "1.0.0"
+
+x-amazon-apigateway-request-validator: "all"
+
+tags:
+    - name: "Customers"
+    - name: "Products"
+    - name: "Orders"
+    - name: "Webhook"
+    - name: "Auth"
+
+paths:
+    /api/v1/customers:
+        post:
+            tags: [Customers]
+            summary: "Cadastra um novo cliente"
+            security:
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CustomerInput"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/NewCustomer"
+            responses:
+                "201":
+                    description: "Cliente criado com sucesso"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "POST"
+                uri: "http://${nlb_dns_name}/api/v1/customers"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+
+    /api/v1/customers/{cpf}:
+        get:
+            tags: [Customers]
+            summary: "Busca um cliente pelo CPF"
+            security:
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
+            parameters:
+                - name: "cpf"
+                  in: "path"
+                  required: true
+                  schema:
+                      type: "string"
+            responses:
+                "200":
+                    description: "Dados do cliente"
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Customer"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/CustomerResponse"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "GET"
+                uri: "http://${nlb_dns_name}/api/v1/customers/{cpf}"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+                requestParameters:
+                    integration.request.path.cpf: "method.request.path.cpf"
+
+    /api/v1/products:
+        post:
+            tags: [Products]
+            summary: "Cadastra um novo produto"
+            security:
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ProductInput"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/NewProduct"
+            responses:
+                "201":
+                    description: "Produto criado com sucesso"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "POST"
+                uri: "http://${nlb_dns_name}/api/v1/products"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+        get:
+            tags: [Products]
+            summary: "Lista produtos por categoria"
+            security:
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
+            parameters:
+                - name: "category"
+                  in: "query"
+                  required: false
+                  schema:
+                      type: "string"
+                      enum: [BURGERS, SIDE_DISHES, DRINKS, DESSERTS]
+            responses:
+                "200":
+                    description: "Lista de produtos"
+                    content:
+                        application/json:
+                            schema:
+                                type: "array"
+                                items:
+                                    $ref: "#/components/schemas/Product"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/ProductListResponse"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "GET"
+                uri: "http://${nlb_dns_name}/api/v1/products"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+
+    /api/v1/products/{product_id}:
+        get:
+            tags: [Products]
+            summary: "Busca um produto pelo ID"
+            security:
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
+            parameters:
+                - name: "product_id"
+                  in: "path"
+                  required: true
+                  schema:
+                      type: "string"
+            responses:
+                "200":
+                    description: "Dados do produto"
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Product"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/ProductResponse"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "GET"
+                uri: "http://${nlb_dns_name}/api/v1/products/{product_id}"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+                requestParameters:
+                    integration.request.path.product_id: "method.request.path.product_id"
+        put:
+            tags: [Products]
+            summary: "Atualiza um produto existente"
+            security:
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
+            parameters:
+                - name: "product_id"
+                  in: "path"
+                  required: true
+                  schema:
+                      type: "string"
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ProductInput"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/NewProduct"
+            responses:
+                "200":
+                    description: "Produto atualizado com sucesso"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "PUT"
+                uri: "http://${nlb_dns_name}/api/v1/products/{product_id}"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+                requestParameters:
+                    integration.request.path.product_id: "method.request.path.product_id"
+        delete:
+            tags: [Products]
+            summary: "Deleta um produto existente"
+            security:
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
+            parameters:
+                - name: "product_id"
+                  in: "path"
+                  required: true
+                  schema:
+                      type: "string"
+            responses:
+                "204":
+                    description: "Produto deletado com sucesso"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "DELETE"
+                uri: "http://${nlb_dns_name}/api/v1/products/{product_id}"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+                requestParameters:
+                    integration.request.path.product_id: "method.request.path.product_id"
+
+    /api/v1/orders:
+        post:
+            tags: [Orders]
+            summary: "Cria um novo pedido"
+            security:
+                - LambdaJWTAuthorizer:
+                      ["baitersburger-funcionario", "baitersburger-totem"]
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/OrderInput"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/NewOrder"
+            responses:
+                "201":
+                    description: "Pedido criado com sucesso"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "POST"
+                uri: "http://${nlb_dns_name}/api/v1/orders"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+        get:
+            tags: [Orders]
+            summary: "Lista todos os pedidos"
+            security:
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
+            responses:
+                "200":
+                    description: "Lista de pedidos"
+                    content:
+                        application/json:
+                            schema:
+                                type: "array"
+                                items:
+                                    $ref: "#/components/schemas/Order"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/OrderListResponse"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "GET"
+                uri: "http://${nlb_dns_name}/api/v1/orders"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+
+    /api/v1/orderstatus/{status}:
+        get:
+            tags: [Orders]
+            summary: "Lista os pedidos por status (endpoint alternativo)"
+            security:
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
+            parameters:
+                - name: "status"
+                  in: "path"
+                  required: true
+                  schema:
+                      type: "string"
+                      enum: [REQUESTED, RECEIVED, PREPARING, READY, DELIVERED]
+            responses:
+                "200":
+                    description: "Lista de pedidos que estão no status especificado"
+                    content:
+                        application/json:
+                            schema:
+                                type: "array"
+                                items:
+                                    $ref: "#/components/schemas/Order"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/OrderListResponse"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "GET"
+                uri: "http://${nlb_dns_name}/api/v1/orderstatus/{status}"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+                requestParameters:
+                    integration.request.path.status: "method.request.path.status"
+
+    /api/v1/orders/{order_id}:
+        patch:
+            tags: [Orders]
+            summary: "Atualiza o status de um pedido"
+            security:
+                - LambdaJWTAuthorizer: ["baitersburger-funcionario"]
+            parameters:
+                - name: "order_id"
+                  in: "path"
+                  required: true
+                  schema:
+                      type: "string"
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateOrderStatusInput"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/UpdateStatus"
+            responses:
+                "200":
+                    description: "Pedido atualizado com sucesso"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "PATCH"
+                uri: "http://${nlb_dns_name}/api/v1/orders/{order_id}"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+                requestParameters:
+                    integration.request.path.order_id: "method.request.path.order_id"
+
+    /api/v1/orders/webhook:
+        post:
+            tags: [Orders, Webhook]
+            summary: "Endpoint para webhook do MercadoPago"
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/WebhookInput"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/WebhookInput"
+            responses:
+                "200":
+                    description: "Webhook chamado com sucesso"
+            x-amazon-apigateway-integration:
+                type: "http_proxy"
+                httpMethod: "POST"
+                uri: "http://${nlb_dns_name}/api/v1/orders/webhook"
+                connectionType: "VPC_LINK"
+                connectionId: "${vpc_link_id}"
+                passthroughBehavior: "when_no_match"
+
+    /api/v1/login:
+        post:
+            tags: ["Auth"]
+            summary: "Endpoint para login de funcionários"
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/LoginInput"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/LoginInput"
+            responses:
+                "200":
+                    description: "Login realizado com sucesso"
+                    content:
+                        application/json:
+                            schema:
+                                type: "object"
+                                properties:
+                                    token: { type: "string" }
+                                    expiresIn: { type: "number" }
+            x-amazon-apigateway-integration:
+                uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${lambda_authenticator_arn}/invocations"
+                httpMethod: "POST"
+                type: "aws_proxy"
+
+components:
+    schemas:
+        Customer:
+            $ref: "./schemas/Customer.yaml"
+
+        CustomerInput:
+            $ref: "./schemas/CustomerInput.yaml"
+
+        Product:
+            $ref: "./schemas/Product.yaml"
+
+        ProductInput:
+            $ref: "./schemas/ProductInput.yaml"
+
+        WebhookInput:
+            $ref: "./schemas/WebhookInput.yaml"
+
+        OrderInput:
+            $ref: "./schemas/OrderInput.yaml"
+
+        UpdateOrderStatusInput:
+            $ref: "./schemas/UpdateOrderStatusInput.yaml"
+
+        OrderProduct:
+            $ref: "./schemas/OrderProduct.yaml"
+
+        Order:
+            $ref: "./schemas/Order.yaml"
+
+        LoginInput:
+            $ref: "./schemas/LoginInput.yaml"
+
+    examples:
+        NewCustomer:
+            $ref: "./examples/NewCustomer.yaml"
+
+        CustomerResponse:
+            $ref: "./examples/CustomerResponse.yaml"
+
+        NewProduct:
+            $ref: "./examples/NewProduct.yaml"
+
+        ProductResponse:
+            $ref: "./examples/ProductResponse.yaml"
+
+        ProductListResponse:
+            $ref: "./examples/ProductListResponse.yaml"
+
+        WebhookInput:
+            $ref: "./examples/WebhookInput.yaml"
+
+        NewOrder:
+            $ref: "./examples/NewOrder.yaml"
+
+        UpdateStatus:
+            $ref: "./examples/UpdateStatus.yaml"
+
+        OrderListResponse:
+            $ref: "./examples/OrderListResponse.yaml"
+
+        LoginInput:
+            $ref: "./examples/LoginInput.yaml"
+
+    x-amazon-apigateway-request-validators:
+        all:
+            validateRequestBody: true
+            validateRequestParameters: true
+
+    securitySchemes:
+        LambdaJWTAuthorizer:
+            type: "apiKey"
+            name: "Authorization"
+            in: "header"
+            x-amazon-apigateway-authtype: "custom"
+            x-amazon-apigateway-authorizer:
+                type: "token"
+                authorizerUri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${lambda_authorizer_arn}/invocations"
